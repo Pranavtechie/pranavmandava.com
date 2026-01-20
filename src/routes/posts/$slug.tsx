@@ -1,13 +1,18 @@
 import type { Post } from "@/lib/posts"
 import { createFileRoute, Link } from "@tanstack/react-router"
+import { createServerFn } from "@tanstack/react-start"
 
-export const Route = createFileRoute("/posts/$slug")({
-  loader: async ({ params }) => {
+const fetchPost = createServerFn({ method: "GET" })
+  .inputValidator((data: { slug: string }) => data)
+  .handler(async ({ data }) => {
     const { getPost } = await import("@/lib/posts.server")
-    const post = await getPost(params.slug)
+    const post = await getPost(data.slug)
     if (!post) throw new Error("Post not found")
     return post
-  },
+  })
+
+export const Route = createFileRoute("/posts/$slug")({
+  loader: ({ params }) => fetchPost({ data: { slug: params.slug } }),
   head: ({ loaderData }) => {
     const post = loaderData as Post
     // Site URL - update this with your actual domain when deploying
