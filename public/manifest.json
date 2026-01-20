@@ -1,6 +1,7 @@
 {
-  "short_name": "TanStack App",
-  "name": "Create TanStack App Sample",
+  "short_name": "Pranav Mandava",
+  "name": "Pranav Mandava - Personal Website",
+  "description": "Personal website and blog of Pranav Mandava - M.S Computer Science at ASU",
   "icons": [
     {
       "src": "favicon.ico",
@@ -20,6 +21,6 @@
   ],
   "start_url": ".",
   "display": "standalone",
-  "theme_color": "#000000",
+  "theme_color": "#d97706",
   "background_color": "#ffffff"
 }

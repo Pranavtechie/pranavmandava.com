@@ -9,6 +9,22 @@ const getPosts = createServerFn({ method: "GET" }).handler(async () => {
 
 export const Route = createFileRoute("/")({
   loader: () => getPosts(),
+  head: () => ({
+    meta: [
+      { title: "Pranav Mandava - Posts" },
+      { name: "description", content: "Personal website and blog of Pranav Mandava - M.S Computer Science at ASU. Essays, thoughts, and writings on technology, computer science, and more." },
+      { property: "og:title", content: "Pranav Mandava - Posts" },
+      { property: "og:description", content: "Personal website and blog of Pranav Mandava - M.S Computer Science at ASU" },
+      { property: "og:type", content: "website" },
+      { property: "og:url", content: process.env.SITE_URL || "https://pranavmandava.com" },
+      { name: "twitter:card", content: "summary" },
+      { name: "twitter:title", content: "Pranav Mandava - Posts" },
+      { name: "twitter:description", content: "Personal website and blog of Pranav Mandava - M.S Computer Science at ASU" },
+    ],
+    links: [
+      { rel: "canonical", href: "/" },
+    ],
+  }),
   component: HomePage,
 })
 

@@ -1,18 +1,63 @@
 import type { Post } from "@/lib/posts"
 import { createFileRoute, Link } from "@tanstack/react-router"
-import { createServerFn } from "@tanstack/react-start"
-
-const getPostBySlug = createServerFn({ method: "GET" }).handler(
-  async (ctx: { data: string }) => {
-    const { getPost } = await import("@/lib/posts.server")
-    const post = await getPost(ctx.data)
-    if (!post) throw new Error("Post not found")
-    return post
-  }
-)
 
 export const Route = createFileRoute("/posts/$slug")({
-  loader: ({ params }) => getPostBySlug({ data: params.slug }),
+  loader: async ({ params }) => {
+    const { getPost } = await import("@/lib/posts.server")
+    const post = await getPost(params.slug)
+    if (!post) throw new Error("Post not found")
+    return post
+  },
+  head: ({ loaderData }) => {
+    const post = loaderData as Post
+    // Site URL - update this with your actual domain when deploying
+    const siteUrl = process.env.SITE_URL || "https://pranavmandava.com"
+    const postUrl = `${siteUrl}/posts/${post.slug}`
+    const publishedDate = new Date(post.created).toISOString()
+    const modifiedDate = post.lastModified ? new Date(post.lastModified).toISOString() : publishedDate
+
+    return {
+      meta: [
+        { title: `${post.title} | Pranav Mandava` },
+        { name: "description", content: post.description },
+        { name: "author", content: post.authors.join(", ") },
+        { name: "keywords", content: post.tags.join(", ") },
+        { property: "og:title", content: post.title },
+        { property: "og:description", content: post.description },
+        { property: "og:type", content: "article" },
+        { property: "og:url", content: postUrl },
+        { property: "article:published_time", content: publishedDate },
+        { property: "article:modified_time", content: modifiedDate },
+        { property: "article:author", content: post.authors.join(", ") },
+        { property: "article:tag", content: post.tags.join(", ") },
+        { name: "twitter:card", content: "summary" },
+        { name: "twitter:title", content: post.title },
+        { name: "twitter:description", content: post.description },
+      ],
+      links: [
+        { rel: "canonical", href: postUrl },
+      ],
+      scripts: [
+        {
+          type: "application/ld+json",
+          children: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BlogPosting",
+            headline: post.title,
+            description: post.description,
+            author: {
+              "@type": "Person",
+              name: post.authors.join(", "),
+            },
+            datePublished: publishedDate,
+            dateModified: modifiedDate,
+            url: postUrl,
+            keywords: post.tags.join(", "),
+          }),
+        },
+      ],
+    }
+  },
   component: PostPage,
 })
 

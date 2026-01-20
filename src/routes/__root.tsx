@@ -9,6 +9,7 @@ export const Route = createRootRoute({
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "Pranav Mandava" },
       { name: "description", content: "Personal website of Pranav Mandava - M.S Computer Science at ASU" },
+      { name: "author", content: "Pranav Mandava" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
